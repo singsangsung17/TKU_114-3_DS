@@ -116,7 +116,7 @@ public class Q12_InventoryCatalog {
         int target = left;
 
         while (leftIndex <= mid && rightIndex <= right) {
-            if (temp[leftIndex].getId().compareToIgnoreCase(
+            if (compareId(temp[leftIndex].getId(),
                     temp[rightIndex].getId()) <= 0) {
                 data[target] = temp[leftIndex];
                 leftIndex++;
@@ -140,6 +140,22 @@ public class Q12_InventoryCatalog {
         }
     }
 
+    private int compareId(String left, String right) {
+        String a = (left == null) ? "" : left.toLowerCase();
+        String b = (right == null) ? "" : right.toLowerCase();
+
+        int limit = Math.min(a.length(), b.length());
+
+        for (int index = 0; index < limit; index++) {
+            char first = a.charAt(index);
+            char second = b.charAt(index);
+            if (first != second) {
+                return first - second;
+            }
+        }
+        return a.length() - b.length();
+    }
+
     public Q12_Product binarySearchById(
         Q12_Product[] sortedProducts,
         String id
@@ -160,8 +176,7 @@ public class Q12_InventoryCatalog {
                 return null;
             }
 
-            int compared =
-                product.getId().compareToIgnoreCase(key);
+            int compared = compareId(product.getId(), key);
 
             if (compared == 0) {
                 return product;
@@ -187,11 +202,33 @@ public class Q12_InventoryCatalog {
 
         for (int index = 0; index < products.size(); index++) {
             Q12_Product product = products.get(index);
-            if (product.getName().toLowerCase().contains(key)) {
+            if (containsIgnoreCase(product.getName(), key)) {
                 result.add(product);
             }
         }
         return result;
+    }
+
+    private boolean containsIgnoreCase(String source, String key) {
+        if (source == null || key == null) {
+            return false;
+        }
+
+        String lower = source.toLowerCase();
+        int limit = lower.length() - key.length();
+
+        for (int start = 0; start <= limit; start++) {
+            int offset = 0;
+            while (offset < key.length() &&
+                   lower.charAt(start + offset) ==
+                   key.charAt(offset)) {
+                offset++;
+            }
+            if (offset == key.length()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public ArrayList<Q12_Product> findLowStock(
